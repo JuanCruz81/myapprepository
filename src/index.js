@@ -4,6 +4,10 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+
+const store = createStore();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

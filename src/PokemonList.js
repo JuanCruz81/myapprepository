@@ -8,18 +8,28 @@ import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
-import ModalPokemon from './ModalPokemon';
+// import ModalPokemon from './ModalPokemon';
 import Form from 'react-bootstrap/Form';
+// import { useState, useEffect } from 'react';
 
 function PokemonList() {
     const [index, setIndex] = useState(0);
     const [arrItems, setItems] = useState([]);
+    const [originalItems, setOriginalItems] = useState([]);
     const handleSelect = (selectedIndex, e) => {
         setIndex(selectedIndex);
     }
     const [show, setShow] = useState(false);
     const [pokemonSelected, setPokemon] = useState(null);
+    const [pokemonSelIndex, setSelPokeIndex] = useState(null);
     const [wordSearch, setWordSearch] = useState(null);
+    const [statsWeight, setStatsWeight] = useState(0);
+    const [statsHeight, setStatsHeight] = useState(0);
+    const [statsType, setStatsType] = useState(null);
+    const [statsAbilities, setStatsAbilities] = useState(null);
+
+    let pokeWeight = 0;
+    let abilities = "";
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -32,6 +42,7 @@ function PokemonList() {
             .then(res => res.json())
             .then(res => {
                 setItems(res.results);
+                setOriginalItems(res.results);
                 console.log(res);
                 // testItems.push(res);
                 console.log(arrItems);
@@ -39,23 +50,72 @@ function PokemonList() {
             .catch(err => console.log(err));
     }, []);
 
+    useEffect(() => {
+        if (wordSearch !== null) {
+            console.log(arrItems);
+            const filterArr = originalItems.filter(item => item.name.includes(wordSearch));
+            console.log(filterArr);
+            setItems(filterArr);
+            console.log(arrItems);
+        }
+    }, [wordSearch]);
+
     const handleClick = (e, index) => {
         console.log(e.currentTarget.textContent);
-        setPokemon(e.currentTarget.textContent)
-        console.log(index);
+        setPokemon(e.currentTarget.textContent);
+        setSelPokeIndex(index + 1);
+        console.log(pokemonSelIndex);
         handleShow();
+        fetch(`https://pokeapi.co/api/v2/pokemon/${index + 1}`)
+            .then(res => res.json())
+            .then(res => {
+                // setItems(res.results);
+                // setOriginalItems(res.results);
+                const data = res.weight.toString();
+                setStatsWeight(res.weight);
+                setStatsHeight(res.height);
+                setStatsType(res.types[0].type.name);
+                setStatsAbilities(res.abilities[0].ability.name);
+                abilities = res.abilities[0].ability.name;
+                console.log(statsAbilities);
+                // setStats(res);
+                pokeWeight = res.weight;
+                // console.log(stats);
+                // testItems.push(res);
+                // console.log(arrItems);
+            })
+            .catch(err => console.log(err));
     }
 
     const getWord = (e) => {
         console.log(e.target.value);
         setWordSearch(e.target.value);
+        const filterArr = arrItems.filter(item => item.name.includes(e.target.value));
+        console.log(filterArr);
+        setItems(filterArr);
+    }
+
+    function getPokeWeight() {
+        fetch(`https://pokeapi.co/api/v2/pokemon/${index + 1}`)
+            .then(res => res.json())
+            .then(res => {
+                // setItems(res.results);
+                // setOriginalItems(res.results);
+                // setSelPokeStats(res.abilities);
+                pokeWeight = res.weight;
+                console.log(pokeWeight);
+                // testItems.push(res);
+                // console.log(arrItems);
+            })
+            .catch(err => console.log(err));
+        return pokeWeight;
     }
 
     return (
         <>
             <Form.Control
                 type="text"
-                class="input-search" 
+                class="input-search"
                 placeholder="Buscar Pokemon"
                 style={{ width: 350, marginLeft: 1100, marginBottom: 12, marginTop: 12 }}
                 onChange={(e) => getWord(e)}
@@ -125,71 +185,38 @@ function PokemonList() {
             </Container>
             <Modal show={show} onHide={handleClose} class="modal-details">
                 <Modal.Header closeButton>
-                    <Button variant="secondary"
-                        onClick={handleClose}
+                    <Button variant="secondary" onClick={handleClose}
+                        // handleClick(pokemonSelIndex - 1)
                     >
-                        go back
+                        #00{pokemonSelIndex - 1}
                     </Button>
                     <Modal.Title style={{ alignContent: 'center', fontSize: 32, marginLeft: 375 }}>{pokemonSelected}</Modal.Title>
                     <Button variant="secondary" onClick={handleClose}
+                        // handleClick(pokemonSelIndex + 1)
                         // class="right-button" 
                         style={{ marginLeft: 387 }}>
-                        go further
+                        #00{pokemonSelIndex + 1}
                     </Button>
                 </Modal.Header>
                 <Modal.Body style={{ alignContent: 'center', margin: 'auto' }}>
-                    <div className='form-row'>
-                        <Card
-                            className="flex-fill"
-                            style={{
-                                width: '10rem',
-                                marginLeft: -500
-                            }}
-                            // onClick={(e) => handleClick(e)}
-                        >
-                            <Card.Img
-                                variant="top"
-                                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png`}
-                                // style={{ backgroundColor: 'lightgray' }} 
-                                />
-                            <Card.Body>
-                                <Card.Title style={{ fontSize: 25 }}>
-                                    {/* {item.name.charAt(0).toUpperCase() +
-                                    item.name.slice(1)} */}
-                                    {/* title */}
-                                </Card.Title>
-                                <Card.Text>
-                                    {/* #001 */}
-                                </Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </div>
-                    <div className='form-row'>
-                        <Card
-                            className="flex-fill"
-                            style={{
-                                width: '10rem',
-                                marginLeft: -500
-                            }}
-                            // onClick={(e) => handleClick(e)}
-                        >
-                            {/* <Card.Img
-                                variant="top"
-                                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png`}
-                                // style={{ backgroundColor: 'lightgray' }} 
-                                /> */}
-                            <Card.Body>
-                                <Card.Title style={{ fontSize: 25 }}>
-                                    {/* {item.name.charAt(0).toUpperCase() +
-                                    item.name.slice(1)} */}
-                                    title
-                                </Card.Title>
-                                <Card.Text>
-                                    {/* #001 */}
-                                </Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </div>
+                    <Container style={{ width: 1000 }}>
+                        <Row>
+                            <Col><img
+                                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonSelIndex}.png`}
+                                style={{ width: 300 }}
+                            /></Col>
+                            <Col>
+                                <Row style={{ marginBottom: 50, marginTop: 93 }}>
+                                    <Col>Height: {statsHeight}</Col>
+                                    <Col>Type: {statsType}</Col>
+                                </Row>
+                                <Row>
+                                    <Col>Weight: {statsWeight}</Col>
+                                    <Col>Abilities: {statsAbilities}</Col>
+                                </Row>
+                            </Col>
+                        </Row>
+                    </Container>
                 </Modal.Body>
                 <Modal.Footer style={{ alignContent: 'center', margin: 'auto' }}>
                     <Button variant="secondary" onClick={() => handleClose()}>

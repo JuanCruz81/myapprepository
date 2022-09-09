@@ -61,7 +61,6 @@
   margin-bottom: 5%;
 }
 .flex-fill:hover {
-  /* background-color: lightgray; */
   cursor: pointer;
 }
 
@@ -72,10 +71,6 @@
 .modal-content {
   width: 240% !important;
   height: 180% !important;
-  /* vertical-align: middle !important;
-  margin: 0 auto;
-  position: absolute !important;
-  left: 40% */
   margin-left: -80%;
 }
 
@@ -89,5 +84,4 @@
 
 .input-search {
   width: 3%;
-  /* padding-bottom: 17; */
 }
